@@ -10,8 +10,7 @@ import logging
 import argparse
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
-# --- Định nghĩa "Bộ não" C-GNN ---
-# Đây là mô hình GNN sẽ "ăn" cái "nồi lẩu" của bạn
+
 
 class CGNN_Model(torch.nn.Module):
     def __init__(self, input_dim, hidden_dim, output_dim, num_layers=4):
@@ -26,14 +25,14 @@ class CGNN_Model(torch.nn.Module):
         # Lớp này sẽ "băm" 2048-chiều xuống còn "hidden_dim" (ví dụ: 512)
         self.projection = Linear(input_dim, hidden_dim)
         
-        # 2. "Hầm" (GCN Layers)
-        # Tạo ra 4 lớp "hầm" GNN
+        # 2.  (GCN Layers)
+        # Tạo ra 4 lớp GNN
         self.conv_layers = torch.nn.ModuleList()
         for _ in range(num_layers):
             self.conv_layers.append(GCNConv(hidden_dim, hidden_dim))
             
-        # 3. "Nêm nếm" (Classifier)
-        # Sau khi "hầm", gộp (pool) tất cả "ADN" lại
+        # 3. (Classifier)
+        #  gộp (pool) tất cả "ADN" lại
         # và đưa qua 1 lớp "quyết định" (classifier)
         self.classifier = Linear(hidden_dim, output_dim)
 
@@ -183,7 +182,7 @@ def main():
 
     logging.info("--- HET GIO (DA DAY XONG)! ---")
     
-    # 8. "Thi Tốt nghiệp" (Test)
+    # 8.  (Test)
     logging.info("--- Dang cham diem 'thi tot nghiep' (Test set)... ---")
     
     # Tải "bộ não" xịn nhất (best_model.pt)

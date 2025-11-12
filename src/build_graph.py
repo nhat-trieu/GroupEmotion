@@ -57,7 +57,7 @@ def setup_logging():
 def load_feature(base_path, feature_type, split, label_name, stem):
     """Tải 1 file .npz cụ thể"""
     try:
-        # Tên thư mục vali (ví dụ: 'features_face_FULL_zip')
+        # Tên thư mục  (ví dụ: 'features_face_FULL_zip')
         folder_name = f'features_{feature_type}_FULL_zip'
         key = FEATURE_KEYS[feature_type]
         
@@ -81,7 +81,7 @@ def load_feature(base_path, feature_type, split, label_name, stem):
 
 def build_single_graph(paths, stem, label_id):
     """
-    Xây dựng 1 "nồi lẩu" graph cho 1 ảnh.
+    Xây dựng 1 graph cho 1 ảnh.
     Đây là "công thức" của paper GNN Multi-Cue.
     """
     
@@ -121,26 +121,26 @@ def build_single_graph(paths, stem, label_id):
     
     current_idx = 0
     
-    # "Món 1: Nước lèo" (Scene) - 1 node
+    # "Món 1:  (Scene) - 1 node
     x[current_idx] = torch.from_numpy(scene_feature[0])
     node_type_ids[current_idx] = NODE_TYPES['scene']
     current_idx += n_scene
     
-    # "Món 2: Rau" (Objects) - n_objects nodes
+    # "Món 2:  (Objects) - n_objects nodes
     if n_objects > 0:
         x[current_idx : current_idx + n_objects] = torch.from_numpy(object_features)
         node_type_ids[current_idx : current_idx + n_objects] = NODE_TYPES['object']
         current_idx += n_objects
     
-    # "Món 3: Nấm" (Humans) - n_humans nodes
+    # "Món 3:  (Humans) - n_humans nodes
     if n_humans > 0:
         x[current_idx : current_idx + n_humans] = torch.from_numpy(human_features)
         node_type_ids[current_idx : current_idx + n_humans] = NODE_TYPES['human']
         current_idx += n_humans
         
-    # "Món 4: Thịt" (Faces) - n_faces nodes
+    # "Món 4:  (Faces) - n_faces nodes
     if n_faces > 0:
-        # "Thịt" (512-chiều) mỏng hơn "rau" (2048-chiều), nên ta đệm 0
+        #  (512-chiều) mỏng hơn "rau" (2048-chiều), nên ta đệm 0
         face_tensor = torch.from_numpy(face_features)
         x[current_idx : current_idx + n_faces, :FEATURE_DIMS['face']] = face_tensor
         node_type_ids[current_idx : current_idx + n_faces] = NODE_TYPES['face']
@@ -164,7 +164,7 @@ def build_single_graph(paths, stem, label_id):
     # 4. Tạo Nhãn (Label `y`)
     y = torch.tensor(label_id, dtype=torch.long)
     
-    # 5. Đóng gói "Nồi lẩu"
+    # 5. Đóng gói 
     graph_data = Data(x=x, edge_index=edge_index, y=y)
     graph_data.node_type = node_type_ids # Lưu thêm loại node để GNN biết
     graph_data.stem = stem # Lưu tên file
@@ -210,7 +210,7 @@ def main():
                 logging.warning(f"Khong tim thay file .npz nao trong {label_path}")
                 continue
 
-            # Bắt đầu "nấu" từng "nồi lẩu" (graph)
+            # Bắt đầu (graph)
             for stem in tqdm(image_stems, desc=f"Xay dung {split}/{label_name}"):
                 
                 paths = {'base': base_path, 'split': split, 'label': label_name}
@@ -224,7 +224,7 @@ def main():
     logging.info(f"Tong so graph 'val': {len(all_graphs['val'])}")
     logging.info(f"Tong so graph 'test': {len(all_graphs['test'])}")
     
-    # Lưu "kho lẩu" này vào 1 file duy nhất
+    # Lưu  vào 1 file duy nhất
     output_file = output_dir / 'graph_data_v1.pkl'
     with open(output_file, 'wb') as f:
         pickle.dump(all_graphs, f)
