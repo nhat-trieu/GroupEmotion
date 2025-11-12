@@ -1,0 +1,23 @@
+
+/face_env/
+
+
+*.zip
+
+
+/features_face_FULL_zip/
+/features_humans_FULL_zip/
+/features_objects_FULL_zip/
+/features_scene_FULL_zip/
+
+
+/graphs/
+
+# Rác test
+/test_output/
+/test_output_objects/
+
+# Rác Python
+__pycache__/
+*.log
+.vscode/
