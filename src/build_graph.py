@@ -14,7 +14,7 @@ LABEL_MAP = {
     'Neutral': 1,
     'Positive': 2
 }
-# Kích thước "ADN" (feature dim) của từng món
+# Kích thước (feature dim) của từng loại
 FEATURE_DIMS = {
     'face': 512,
     'human': 2048,
@@ -29,11 +29,8 @@ FEATURE_KEYS = {
     'scene': 'scene'
 }
 
-# --- THỨ TỰ NODE TRONG GRAPH (Rất quan trọng) ---
-# Node 0: Toàn cảnh (Scene)
-# Node 1 -> K: Vật thể (Objects)
-# Node K+1 -> M: Dáng người (Humans)
-# Node M+1 -> N: Khuôn mặt (Faces)
+# --- THỨ TỰ NODE TRONG GRAPH 
+
 NODE_TYPES = {
     'scene': 0,
     'object': 1,
@@ -80,10 +77,6 @@ def load_feature(base_path, feature_type, split, label_name, stem):
         return np.empty((0, FEATURE_DIMS[feature_type]), dtype=np.float32)
 
 def build_single_graph(paths, stem, label_id):
-    """
-    Xây dựng 1 graph cho 1 ảnh.
-    Đây là "công thức" của paper GNN Multi-Cue.
-    """
     
     # 1. Tải 4 "nguyên liệu" (face, human, object, scene)
     face_features = load_feature(paths['base'], 'face', paths['split'], paths['label'], stem)
@@ -121,26 +114,26 @@ def build_single_graph(paths, stem, label_id):
     
     current_idx = 0
     
-    # "Món 1:  (Scene) - 1 node
+    #   (Scene) - 1 node
     x[current_idx] = torch.from_numpy(scene_feature[0])
     node_type_ids[current_idx] = NODE_TYPES['scene']
     current_idx += n_scene
     
-    # "Món 2:  (Objects) - n_objects nodes
+    #  (Objects) - n_objects nodes
     if n_objects > 0:
         x[current_idx : current_idx + n_objects] = torch.from_numpy(object_features)
         node_type_ids[current_idx : current_idx + n_objects] = NODE_TYPES['object']
         current_idx += n_objects
     
-    # "Món 3:  (Humans) - n_humans nodes
+    #   (Humans) - n_humans nodes
     if n_humans > 0:
         x[current_idx : current_idx + n_humans] = torch.from_numpy(human_features)
         node_type_ids[current_idx : current_idx + n_humans] = NODE_TYPES['human']
         current_idx += n_humans
         
-    # "Món 4:  (Faces) - n_faces nodes
+    #   (Faces) - n_faces nodes
     if n_faces > 0:
-        #  (512-chiều) mỏng hơn "rau" (2048-chiều), nên ta đệm 0
+        #  (512-chiều) mỏng hơn (2048-chiều), nên ta đệm 0
         face_tensor = torch.from_numpy(face_features)
         x[current_idx : current_idx + n_faces, :FEATURE_DIMS['face']] = face_tensor
         node_type_ids[current_idx : current_idx + n_faces] = NODE_TYPES['face']

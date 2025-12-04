@@ -88,14 +88,14 @@ def process_image(img_path, mtcnn, model, device, error_file):
             face_pil = Image.fromarray(face_crop)
             face_pil = face_pil.resize((160, 160), Image.BILINEAR)
             
-            # Convert to tensor and normalize
+            # Convert to tensor and normalize [-1, 1]
             face_tensor = torch.tensor(np.array(face_pil)).permute(2, 0, 1).float()
             face_tensor = (face_tensor - 127.5) / 128.0
             face_tensor = face_tensor.unsqueeze(0).to(device)
             
             # Get embedding
             with torch.no_grad():
-                embedding = model(face_tensor).cpu().numpy()
+                embedding = model(face_tensor).cpu().numpy() # (1, 512)
             
             faces_list.append(embedding[0])
             valid_boxes.append(box)

@@ -21,7 +21,7 @@ class CGNN_Model(torch.nn.Module):
         self.num_layers = num_layers
         
         # 1. "Sơ chế" (Projection Layer)
-        # "Nồi lẩu" của bạn có "ADN" 2048-chiều (do ta đệm 0 cho face)
+        #  "ADN" 2048-chiều (do ta đệm 0 cho face)
         # Lớp này sẽ "băm" 2048-chiều xuống còn "hidden_dim" (ví dụ: 512)
         self.projection = Linear(input_dim, hidden_dim)
         
@@ -44,13 +44,13 @@ class CGNN_Model(torch.nn.Module):
         x = self.projection(x)
         x = F.relu(x)
         
-        # 2. "Hầm" 4 lần
+        # 2.  4 lần
         # Cho "ADN" chạy qua 4 lớp GNN
         for conv in self.conv_layers:
             x = conv(x, edge_index)
             x = F.relu(x)
             
-        # 3. "Nêm nếm"
+        
         # gộp (pool) tất cả node của TỪNG graph lại thành 1 vector
         # x shape: [batch_size, hidden_dim]
         x = global_mean_pool(x, batch)
@@ -61,7 +61,7 @@ class CGNN_Model(torch.nn.Module):
         
         return out
 
-# --- Thiết lập "Bữa tiệc" (Hàm Train/Eval) ---
+# --- Thiết lập  (Hàm Train/Eval) ---
 
 def setup_logging(log_path):
     """Cài đặt logging để lưu lại nhật ký"""
@@ -110,7 +110,7 @@ def evaluate(model, loader, device):
     
     return acc, f1, precision, recall
 
-# --- "Bắt đầu Ăn" (Hàm Main) ---
+
 
 def main():
     parser = argparse.ArgumentParser(description='Train C-GNN Model')
@@ -130,11 +130,11 @@ def main():
     
     logging.info(f"Cac tham so: {args}")
     
-    # 2. Cài đặt "nóc nhà"
+    # 2. Cài đặt 
     device = torch.device(args.device if torch.cuda.is_available() else 'cpu')
     logging.info(f"Dang su dung thiet bi: {device}")
     
-    # 3. Mở "Kho Lẩu"
+    # 3. Mở "Kho "
     logging.info(f"Dang tai 'kho lau' tu: {args.graph_file}")
     with open(args.graph_file, 'rb') as f:
         all_graphs = pickle.load(f)
@@ -151,7 +151,7 @@ def main():
     val_loader = DataLoader(val_graphs, batch_size=args.batch_size, shuffle=False)
     test_loader = DataLoader(test_graphs, batch_size=args.batch_size, shuffle=False)
     
-    # 5. Thuê "Người nếm"
+    # 5. 
     model = CGNN_Model(
         input_dim=2048, # Vi ta da dem 0 (pad) tat ca len 2048
         hidden_dim=args.hidden_dim,
@@ -160,7 +160,7 @@ def main():
     
     logging.info(f"Da khoi tao model:\n{model}")
     
-    # 6. Mua "Roi vọt" (Loss) và "Kẹo" (Optimizer)
+    # 6.  (Loss) và  (Optimizer)
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr)
     
